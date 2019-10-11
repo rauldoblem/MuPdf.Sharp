@@ -2,21 +2,21 @@
 #include <mupdf\fitz.h>
 
 MuPdf::Sharp::Fitz::Document::Document(fz_document* pDocument, Context ^ ctx)
-	: m_bContextInternalyCreated(false)
+	: m_bContextInternallyCreated(false)
 {
 	m_pDocument = pDocument;
 	m_pCtx = ctx;
 }
 MuPdf::Sharp::Fitz::Document::Document()
 	: m_pCtx(gcnew Context(0))
-	, m_bContextInternalyCreated(true)
+	, m_bContextInternallyCreated(true)
 {
 	m_pDocument = static_cast<fz_document*>(fz_new_document_of_size(m_pCtx->m_pCtx, sizeof(fz_document)));
 }
 
 MuPdf::Sharp::Fitz::Document::Document(String ^ fileName)
 	: m_pCtx(gcnew Context(0))
-	, m_bContextInternalyCreated(true)
+	, m_bContextInternallyCreated(true)
 {
 	char* fileNameChars = (char*)Marshal::StringToHGlobalAnsi(fileName).ToPointer();
 	m_pDocument = fz_open_document(m_pCtx->m_pCtx, fileNameChars);
@@ -24,7 +24,7 @@ MuPdf::Sharp::Fitz::Document::Document(String ^ fileName)
 }
 
 MuPdf::Sharp::Fitz::Document::Document(Context ^ ctx, String ^ fileName)
-	: m_bContextInternalyCreated(false)
+	: m_bContextInternallyCreated(false)
 	, m_pCtx(ctx)
 {
 	char* fileNameChars = (char*)Marshal::StringToHGlobalAnsi(fileName).ToPointer();
@@ -34,7 +34,7 @@ MuPdf::Sharp::Fitz::Document::Document(Context ^ ctx, String ^ fileName)
 
 MuPdf::Sharp::Fitz::Document::Document(IO::Stream ^ documentStream, String ^ magic)
 	: m_pCtx(gcnew Context(0))
-	, m_bContextInternalyCreated(true)
+	, m_bContextInternallyCreated(true)
 {
 	char* magicChars = (char*)Marshal::StringToHGlobalAnsi(magic).ToPointer();
 	if (Fitz::Stream^ internalStream = dynamic_cast<Fitz::Stream^>(documentStream))
@@ -50,14 +50,14 @@ MuPdf::Sharp::Fitz::Document::Document(IO::Stream ^ documentStream, String ^ mag
 		
 		internalStream = Fitz::Stream::OpenMemory(m_pCtx, buffer);
 		m_pDocument = fz_open_document_with_stream(m_pCtx->m_pCtx, magicChars, internalStream->m_pStream);
-		m_pInternalyCreatedStream = internalStream;
+		m_pInternallyCreatedStream = internalStream;
 	}
 	Marshal::FreeHGlobal((IntPtr)magicChars);
 }
 
 MuPdf::Sharp::Fitz::Document::Document(Context ^ ctx, IO::Stream ^ documentStream, String ^ magic)
 	: m_pCtx(ctx)
-	, m_bContextInternalyCreated(false)
+	, m_bContextInternallyCreated(false)
 {
 	char* magicChars = (char*)Marshal::StringToHGlobalAnsi(magic).ToPointer();
 	if (Fitz::Stream^ internalStream = dynamic_cast<Fitz::Stream^>(documentStream))
@@ -73,7 +73,7 @@ MuPdf::Sharp::Fitz::Document::Document(Context ^ ctx, IO::Stream ^ documentStrea
 
 		internalStream = Fitz::Stream::OpenMemory(m_pCtx, buffer);
 		m_pDocument = fz_open_document_with_stream(m_pCtx->m_pCtx, magicChars, internalStream->m_pStream);
-		m_pInternalyCreatedStream = internalStream;
+		m_pInternallyCreatedStream = internalStream;
 	}
 	Marshal::FreeHGlobal((IntPtr)magicChars);
 }
@@ -81,13 +81,13 @@ MuPdf::Sharp::Fitz::Document::Document(Context ^ ctx, IO::Stream ^ documentStrea
 MuPdf::Sharp::Fitz::Document::~Document()
 {
 	fz_drop_document(m_pCtx->m_pCtx, m_pDocument);
-	if (m_bContextInternalyCreated)
+	if (m_bContextInternallyCreated)
 	{
 		delete m_pCtx;
 	}
-	if (m_pInternalyCreatedStream != nullptr)
+	if (m_pInternallyCreatedStream != nullptr)
 	{
-		delete m_pInternalyCreatedStream;
+		delete m_pInternallyCreatedStream;
 	}
 }
 
